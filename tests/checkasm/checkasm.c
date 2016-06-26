@@ -130,7 +130,7 @@ static const struct {
     #if CONFIG_LLVIDENCDSP
         { "llviddspenc", checkasm_check_llviddspenc },
     #endif
-    #if CONFIG_PIXBLOCKDSP
+    #if CONFIG_PIXBLOCKDSP && !(ARCH_PPC64 && HAVE_BIGENDIAN)
         { "pixblockdsp", checkasm_check_pixblockdsp },
     #endif
     #if CONFIG_UTVIDEO_DECODER

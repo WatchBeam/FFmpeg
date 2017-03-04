@@ -70,7 +70,7 @@
 #endif
 
 #define UDP_TX_BUF_SIZE 32768
-#define UDP_MAX_PKT_SIZE 65536
+#define UDP_MAX_PKT_SIZE (4*1024*1024)
 #define UDP_HEADER_SIZE 8
 
 typedef struct UDPContext {
@@ -791,7 +791,7 @@ static int udp_open(URLContext *h, const char *uri, int flags)
     //s->circular_buffer_size *= 188;
     s->circular_buffer_size *= s->pkt_size;
 
-    av_log(h, AV_LOG_DEBUG, "Circular buffer is %d\n", s->circular_buffer_size);
+    av_log(h, AV_LOG_DEBUG, "Circular buffer is %d\n", s->circular_buffer_size);s
 
     if (flags & AVIO_FLAG_WRITE) {
         h->max_packet_size = s->pkt_size;

@@ -791,7 +791,7 @@ static int udp_open(URLContext *h, const char *uri, int flags)
     //s->circular_buffer_size *= 188;
     s->circular_buffer_size *= s->pkt_size;
 
-    av_log(h, AV_LOG_DEBUG, "Circular buffer is %d\n", s->circular_buffer_size);s
+    av_log(h, AV_LOG_DEBUG, "Circular buffer is %d\n", s->circular_buffer_size);
 
     if (flags & AVIO_FLAG_WRITE) {
         h->max_packet_size = s->pkt_size;

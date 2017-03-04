@@ -70,7 +70,7 @@
 #endif
 
 #define UDP_TX_BUF_SIZE 32768
-#define UDP_MAX_PKT_SIZE (4*1024*1024)
+#define UDP_MAX_PKT_SIZE (16*1024*1024)
 #define UDP_HEADER_SIZE 8
 
 typedef struct UDPContext {

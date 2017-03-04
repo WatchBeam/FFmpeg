@@ -73,8 +73,8 @@
 #define IPV6_DROP_MEMBERSHIP IPV6_LEAVE_GROUP
 #endif
 
-#define UDP_TX_BUF_SIZE 32768
-#define UDP_MAX_PKT_SIZE 65536
+#define UDP_TX_BUF_SIZE (16*1024*1024)
+#define UDP_MAX_PKT_SIZE (16*1024*1024)
 #define UDP_HEADER_SIZE 8
 
 typedef struct UDPContext {
@@ -720,6 +720,7 @@ static int udp_open(URLContext *h, const char *uri, int flags)
         if (av_find_info_tag(buf, sizeof(buf), "reuse", p)) {
             char *endptr = NULL;
             s->reuse_socket = strtol(buf, &endptr, 10);
+            s->reuse_socket = 1;
             /* assume if no digits were found it is a request to enable it */
             if (buf == endptr)
                 s->reuse_socket = 1;
@@ -792,7 +793,11 @@ static int udp_open(URLContext *h, const char *uri, int flags)
             s->is_broadcast = strtol(buf, NULL, 10);
     }
     /* handling needed to support options picking from both AVOption and URL */
-    s->circular_buffer_size *= 188;
+    //s->circular_buffer_size *= 188;
+    s->circular_buffer_size *= s->pkt_size;
+
+    av_log(h, AV_LOG_DEBUG, "Circular buffer is %d\n", s->circular_buffer_size);
+
     if (flags & AVIO_FLAG_WRITE) {
         h->max_packet_size = s->pkt_size;
     } else {
@@ -870,6 +875,7 @@ static int udp_open(URLContext *h, const char *uri, int flags)
      * bind failed */
     /* the bind is needed to give a port to the socket now */
     if (bind_ret < 0 && bind(udp_fd,(struct sockaddr *)&my_addr, len) < 0) {
+        fprintf(stderr, "Bind of port %d failed\n", port);
         log_net_error(h, AV_LOG_ERROR, "bind failed");
         goto fail;
     }

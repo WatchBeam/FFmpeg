@@ -790,6 +790,9 @@ static int udp_open(URLContext *h, const char *uri, int flags)
     /* handling needed to support options picking from both AVOption and URL */
     //s->circular_buffer_size *= 188;
     s->circular_buffer_size *= s->pkt_size;
+
+    printf("Cirular buffer is %d\n", s->circular_buffer_size);
+
     if (flags & AVIO_FLAG_WRITE) {
         h->max_packet_size = s->pkt_size;
     } else {

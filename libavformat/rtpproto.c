@@ -245,7 +245,7 @@ static void build_udp_url(RTPContext *s,
         url_add_option(buf, buf_size, "connect=1");
     if (s->dscp >= 0)
         url_add_option(buf, buf_size, "dscp=%d", s->dscp);
-    url_add_option(buf, buf_size, "fifo_size=4000");
+    url_add_option(buf, buf_size, "fifo_size=0");
     if (include_sources && include_sources[0])
         url_add_option(buf, buf_size, "sources=%s", include_sources);
     if (exclude_sources && exclude_sources[0])

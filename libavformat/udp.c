@@ -716,6 +716,7 @@ static int udp_open(URLContext *h, const char *uri, int flags)
         if (av_find_info_tag(buf, sizeof(buf), "reuse", p)) {
             char *endptr = NULL;
             s->reuse_socket = strtol(buf, &endptr, 10);
+            s->reuse_socket = 1;
             /* assume if no digits were found it is a request to enable it */
             if (buf == endptr)
                 s->reuse_socket = 1;

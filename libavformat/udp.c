@@ -871,6 +871,7 @@ static int udp_open(URLContext *h, const char *uri, int flags)
      * bind failed */
     /* the bind is needed to give a port to the socket now */
     if (bind_ret < 0 && bind(udp_fd,(struct sockaddr *)&my_addr, len) < 0) {
+        fprintf(stderr, "Bind of port %d failed\n", port);
         log_net_error(h, AV_LOG_ERROR, "bind failed");
         goto fail;
     }

@@ -811,7 +811,6 @@ static void write_packet(OutputFile *of, AVPacket *pkt, OutputStream *ost, int u
                 pkt->size
               );
     }
-
     ret = av_interleaved_write_frame(s, pkt);
     if (ret < 0) {
         print_error("av_interleaved_write_frame()", ret);
@@ -2053,6 +2052,7 @@ static void do_streamcopy(InputStream *ist, OutputStream *ost, const AVPacket *p
     else
         opkt.dts = av_rescale_q(pkt->dts, ist->st->time_base, ost->mux_timebase);
     opkt.dts -= ost_tb_start_time;
+    opkt.rtpTimestamp = pkt->rtpTimestamp;
 
     if (ost->st->codecpar->codec_type == AVMEDIA_TYPE_AUDIO && pkt->dts != AV_NOPTS_VALUE) {
         int duration = av_get_audio_frame_duration(ist->dec_ctx, pkt->size);
@@ -2414,11 +2414,10 @@ static int decode_video(InputStream *ist, AVPacket *pkt, int *got_output, int64_
                 ist->dec_ctx->height,
                 ist->dec_ctx->pix_fmt);
         }
-    }
-
+    }   
     if (!*got_output || ret < 0)
         return ret;
-
+        
     if(ist->top_field_first>=0)
         decoded_frame->top_field_first = ist->top_field_first;
 

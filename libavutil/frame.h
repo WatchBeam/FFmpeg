@@ -312,6 +312,11 @@ typedef struct AVFrame {
 
 #if FF_API_PKT_PTS
     /**
+     * Timestamp copied from the AVPacket that was decoded to produce this frame.
+     */
+    int64_t pkt_rtpTimestamp;
+
+    /**
      * PTS copied from the AVPacket that was decoded to produce this frame.
      * @deprecated use the pts field instead
      */

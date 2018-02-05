@@ -589,8 +589,11 @@ void ff_rtp_parse_set_crypto(RTPDemuxContext *s, const char *suite,
  * This was the second switch in rtp_parse packet.
  * Normalizes time, if required, sets stream_index, etc.
  */
-static void finalize_packet(RTPDemuxContext *s, AVPacket *pkt, uint32_t timestamp)
+static void finalize_packet(RTPDemuxContext *s, AVPacket *pkt, uint32_t timestamp, uint32_t ogTimestamp)
 {
+    // Capture the rtp timestamp in the packet.
+    pkt->rtpTimestamp = ogTimestamp;
+
     if (pkt->pts != AV_NOPTS_VALUE || pkt->dts != AV_NOPTS_VALUE)
         return; /* Timestamp already set by depacketizer */
     if (timestamp == RTP_NOTS_VALUE)
@@ -613,12 +616,14 @@ static void finalize_packet(RTPDemuxContext *s, AVPacket *pkt, uint32_t timestam
 
     if (!s->base_timestamp)
         s->base_timestamp = timestamp;
+
     /* assume that the difference is INT32_MIN < x < INT32_MAX,
      * but allow the first timestamp to exceed INT32_MAX */
     if (!s->timestamp)
         s->unwrapped_timestamp += timestamp;
     else
         s->unwrapped_timestamp += (int32_t)(timestamp - s->timestamp);
+
     s->timestamp = timestamp;
     pkt->pts     = s->unwrapped_timestamp + s->range_start_offset -
                    s->base_timestamp;
@@ -631,7 +636,7 @@ static int rtp_parse_packet_internal(RTPDemuxContext *s, AVPacket *pkt,
     int payload_type, seq, flags = 0;
     int ext, csrc;
     AVStream *st;
-    uint32_t timestamp;
+    uint32_t timestamp, ogTimestamp;
     int rv = 0;
 
     csrc         = buf[0] & 0x0f;
@@ -641,6 +646,7 @@ static int rtp_parse_packet_internal(RTPDemuxContext *s, AVPacket *pkt,
         flags |= RTP_FLAG_MARKER;
     seq       = AV_RB16(buf + 2);
     timestamp = AV_RB32(buf + 4);
+    ogTimestamp = timestamp;
     ssrc      = AV_RB32(buf + 8);
     /* store the ssrc in the RTPDemuxContext */
     s->ssrc = ssrc;
@@ -702,8 +708,7 @@ static int rtp_parse_packet_internal(RTPDemuxContext *s, AVPacket *pkt,
     }
 
     // now perform timestamp things....
-    finalize_packet(s, pkt, timestamp);
-
+    finalize_packet(s, pkt, timestamp, ogTimestamp);
     return rv;
 }
 
@@ -801,7 +806,7 @@ static int rtp_parse_one_packet(RTPDemuxContext *s, AVPacket *pkt,
             rv        = s->handler->parse_packet(s->ic, s->dynamic_protocol_context,
                                                  s->st, pkt, &timestamp, NULL, 0, 0,
                                                  flags);
-            finalize_packet(s, pkt, timestamp);
+            finalize_packet(s, pkt, timestamp, timestamp);
             return rv;
         }
     }

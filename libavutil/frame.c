@@ -153,6 +153,7 @@ FF_ENABLE_DEPRECATION_WARNINGS
     frame->pkt_duration        = 0;
     frame->pkt_pos             = -1;
     frame->pkt_size            = -1;
+    frame->pkt_rtpTimestamp      = 0;
     frame->key_frame           = 1;
     frame->sample_aspect_ratio = (AVRational){ 0, 1 };
     frame->format              = -1; /* unknown */
@@ -355,6 +356,7 @@ FF_DISABLE_DEPRECATION_WARNINGS
     dst->pkt_pts                = src->pkt_pts;
 FF_ENABLE_DEPRECATION_WARNINGS
 #endif
+    dst->pkt_rtpTimestamp       = src->pkt_rtpTimestamp;
     dst->pkt_dts                = src->pkt_dts;
     dst->pkt_pos                = src->pkt_pos;
     dst->pkt_size               = src->pkt_size;

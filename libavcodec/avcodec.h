@@ -1423,6 +1423,12 @@ typedef struct AVPacket {
      * must be converted to true pts/dts before they are stored in AVPacket.
      */
     int64_t pts;
+
+    /**
+     * The origional rtp timestamp of the packet if it had one.
+     */
+    int64_t rtpTimestamp;    
+    
     /**
      * Decompression timestamp in AVStream->time_base units; the time at which
      * the packet is decompressed.

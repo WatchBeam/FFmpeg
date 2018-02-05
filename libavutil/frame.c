@@ -101,6 +101,7 @@ static void get_frame_defaults(AVFrame *frame)
     frame->pts                   =
     frame->pkt_dts               =
     frame->pkt_pts               = AV_NOPTS_VALUE;
+    frame->pkt_rtpTimestamp      = 0;
     av_frame_set_best_effort_timestamp(frame, AV_NOPTS_VALUE);
     av_frame_set_pkt_duration         (frame, 0);
     av_frame_set_pkt_pos              (frame, -1);
@@ -295,6 +296,7 @@ static int frame_copy_props(AVFrame *dst, const AVFrame *src, int force_copy)
     dst->sample_rate            = src->sample_rate;
     dst->opaque                 = src->opaque;
     dst->pkt_pts                = src->pkt_pts;
+    dst->pkt_rtpTimestamp       = src->pkt_rtpTimestamp;
     dst->pkt_dts                = src->pkt_dts;
     dst->pkt_pos                = src->pkt_pos;
     dst->pkt_size               = src->pkt_size;

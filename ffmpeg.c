@@ -758,7 +758,6 @@ static void write_frame(AVFormatContext *s, AVPacket *pkt, OutputStream *ost)
                 pkt->size
               );
     }
-
     ret = av_interleaved_write_frame(s, pkt);
     if (ret < 0) {
         print_error("av_interleaved_write_frame()", ret);
@@ -1850,6 +1849,7 @@ static void do_streamcopy(InputStream *ist, OutputStream *ost, const AVPacket *p
     else
         opkt.dts = av_rescale_q(pkt->dts, ist->st->time_base, ost->st->time_base);
     opkt.dts -= ost_tb_start_time;
+    opkt.rtpTimestamp = pkt->rtpTimestamp;
 
     if (ost->st->codec->codec_type == AVMEDIA_TYPE_AUDIO && pkt->dts != AV_NOPTS_VALUE) {
         int duration = av_get_audio_frame_duration(ist->dec_ctx, pkt->size);
@@ -2087,7 +2087,6 @@ static int decode_video(InputStream *ist, AVPacket *pkt, int *got_output)
     ret = avcodec_decode_video2(ist->dec_ctx,
                                 decoded_frame, got_output, pkt);
     update_benchmark("decode_video %d.%d", ist->file_index, ist->st->index);
-
     // The following line may be required in some cases where there is no parser
     // or the parser does not has_b_frames correctly
     if (ist->st->codec->has_b_frames < ist->dec_ctx->has_b_frames) {
@@ -2117,11 +2116,10 @@ static int decode_video(InputStream *ist, AVPacket *pkt, int *got_output)
                 ist->dec_ctx->height,
                 ist->dec_ctx->pix_fmt);
         }
-    }
-
+    }   
     if (!*got_output || ret < 0)
         return ret;
-
+        
     if(ist->top_field_first>=0)
         decoded_frame->top_field_first = ist->top_field_first;
 

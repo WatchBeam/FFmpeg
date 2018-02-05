@@ -1982,6 +1982,7 @@ int attribute_align_arg avcodec_encode_video2(AVCodecContext *avctx,
     }
 
     if (!ret) {
+        avpkt->rtpTimestamp = frame->pkt_rtpTimestamp;
         if (!*got_packet_ptr)
             avpkt->size = 0;
         else if (!(avctx->codec->capabilities & AV_CODEC_CAP_DELAY))

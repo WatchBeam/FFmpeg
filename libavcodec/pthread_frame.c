@@ -449,7 +449,6 @@ int ff_thread_decode_frame(AVCodecContext *avctx,
 
         if (finished >= avctx->thread_count) finished = 0;
     } while (!avpkt->size && !*got_picture_ptr && finished != fctx->next_finished);
-
     update_context_from_thread(avctx, p->avctx, 1);
 
     if (fctx->next_decoding >= avctx->thread_count) fctx->next_decoding = 0;
@@ -613,16 +612,20 @@ int ff_frame_thread_init(AVCodecContext *avctx)
     w32thread_init();
 #endif
 
-    if (!thread_count) {
-        int nb_cpus = av_cpu_count();
-        if ((avctx->debug & (FF_DEBUG_VIS_QP | FF_DEBUG_VIS_MB_TYPE)) || avctx->debug_mv)
-            nb_cpus = 1;
-        // use number of cores + 1 as thread count if there is more than one
-        if (nb_cpus > 1)
-            thread_count = avctx->thread_count = FFMIN(nb_cpus + 1, MAX_AUTO_THREADS);
-        else
-            thread_count = avctx->thread_count = 1;
-    }
+    // if (!thread_count) {
+    //     int nb_cpus = av_cpu_count();
+    //     if ((avctx->debug & (FF_DEBUG_VIS_QP | FF_DEBUG_VIS_MB_TYPE)) || avctx->debug_mv)
+    //         nb_cpus = 1;
+    //     // use number of cores + 1 as thread count if there is more than one
+    //     if (nb_cpus > 1)
+    //         thread_count = avctx->thread_count = FFMIN(nb_cpus + 1, MAX_AUTO_THREADS);
+    //     else
+    //         thread_count = avctx->thread_count = 1;
+    // }
+
+    // MIXER - To keep latency low, we reduce the number of threads to 2 so we only have one
+    // frame buffered at a time. The number of threads == the number frames we buffer.
+    thread_count = avctx->thread_count = 2;
 
     if (thread_count <= 1) {
         avctx->active_thread_type = 0;

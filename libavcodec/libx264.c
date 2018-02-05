@@ -335,15 +335,21 @@ static int X264_frame(AVCodecContext *ctx, AVPacket *pkt, const AVFrame *frame,
     do {
         if (x264_encoder_encode(x4->enc, &nal, &nnal, frame? &x4->pic: NULL, &pic_out) < 0)
             return AVERROR_EXTERNAL;
-
+        if(x4->pic.i_pts != pic_out.i_pts)
+        {
+            av_log(ctx, AV_LOG_ERROR, "x264_encoder_encode pts don't match! This will cause AV sync issues for rtp! in %d out %d", x4->pic.i_pts, pic_out.i_pts);
+        }
         ret = encode_nals(ctx, pkt, nal, nnal);
         if (ret < 0)
             return ret;
     } while (!ret && !frame && x264_encoder_delayed_frames(x4->enc));
 
+    if(frame)
+    {
+        pkt->rtpTimestamp = frame->pkt_rtpTimestamp;
+    }
     pkt->pts = pic_out.i_pts;
     pkt->dts = pic_out.i_dts;
-
 
     switch (pic_out.i_type) {
     case X264_TYPE_IDR:

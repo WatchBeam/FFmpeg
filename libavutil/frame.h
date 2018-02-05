@@ -268,6 +268,11 @@ typedef struct AVFrame {
     int64_t pts;
 
     /**
+     * Timestamp copied from the AVPacket that was decoded to produce this frame.
+     */
+    int64_t pkt_rtpTimestamp;
+
+    /**
      * PTS copied from the AVPacket that was decoded to produce this frame.
      */
     int64_t pkt_pts;

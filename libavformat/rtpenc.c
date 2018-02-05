@@ -530,7 +530,14 @@ static int rtp_write_packet(AVFormatContext *s1, AVPacket *pkt)
         s->last_octet_count = s->octet_count;
         s->first_packet = 0;
     }
-    s->cur_timestamp = s->base_timestamp + pkt->pts;
+
+    // If we have an orgional rtp timestamp, use that.
+    if(pkt->rtpTimestamp) {
+        s->cur_timestamp = pkt->rtpTimestamp;          
+    }
+    else {
+        s->cur_timestamp = pkt->pts;           
+    }
 
     switch(st->codecpar->codec_id) {
     case AV_CODEC_ID_PCM_MULAW:

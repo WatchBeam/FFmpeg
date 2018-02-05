@@ -1390,6 +1390,7 @@ static int parse_packet(AVFormatContext *s, AVPacket *pkt, int stream_index)
         out_pkt.pts          = st->parser->pts;
         out_pkt.dts          = st->parser->dts;
         out_pkt.pos          = st->parser->pos;
+        out_pkt.rtpTimestamp = pkt->rtpTimestamp;
 
         if (st->need_parsing == AVSTREAM_PARSE_FULL_RAW)
             out_pkt.pos = st->parser->frame_offset;
@@ -1470,6 +1471,7 @@ static int read_frame_internal(AVFormatContext *s, AVPacket *pkt)
         }
         ret = 0;
         st  = s->streams[cur_pkt.stream_index];
+        pkt->rtpTimestamp = cur_pkt.rtpTimestamp;
 
         /* update context if required */
         if (st->internal->need_context_update) {

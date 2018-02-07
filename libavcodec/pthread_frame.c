@@ -623,9 +623,8 @@ int ff_frame_thread_init(AVCodecContext *avctx)
     //         thread_count = avctx->thread_count = 1;
     // }
 
-    // MIXER - To keep latency low, we reduce the number of threads to 2 so we only have one
-    // frame buffered at a time. The number of threads == the number frames we buffer.
-    thread_count = avctx->thread_count = 2;
+    // For 4k, we need to give the decoder more threads to have more time to decode.
+    thread_count = avctx->thread_count = 4;
 
     if (thread_count <= 1) {
         avctx->active_thread_type = 0;

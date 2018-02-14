@@ -1983,7 +1983,7 @@ int attribute_align_arg avcodec_encode_video2(AVCodecContext *avctx,
 
     if (!ret) {
         avpkt->rtpTimestamp = frame->pkt_rtpTimestamp;
-        av_log(ctx, AV_LOG_INFO, "Encode avcodec_encode_video2 ptk TS %d", (uint32_t)avpkt->rtpTimestamp);
+        av_log(avctx, AV_LOG_INFO, "Encode avcodec_encode_video2 ptk TS %d", (uint32_t)avpkt->rtpTimestamp);
         
         if (!*got_packet_ptr)
             avpkt->size = 0;

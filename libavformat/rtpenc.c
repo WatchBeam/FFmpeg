@@ -532,11 +532,15 @@ static int rtp_write_packet(AVFormatContext *s1, AVPacket *pkt)
     }
 
     // If we have an orgional rtp timestamp, use that.
-    if(pkt->rtpTimestamp) {
-        s->cur_timestamp = pkt->rtpTimestamp;          
+    if(pkt->rtpTimestamp != -1) {
+        s->cur_timestamp = pkt->rtpTimestamp;      
+        av_log(s1, AV_LOG_INFO,
+            "RTP: Outoing packet TS %d,\n", (int32_t)pkt->rtpTimestamp);
     }
     else {
-        s->cur_timestamp = pkt->pts;           
+        s->cur_timestamp = pkt->pts;     
+        av_log(s1, AV_LOG_INFO,
+            "RTP: Outoing has no rtpTS\n";      
     }
 
     switch(st->codecpar->codec_id) {

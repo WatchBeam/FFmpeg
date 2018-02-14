@@ -565,6 +565,9 @@ static void finalize_packet(RTPDemuxContext *s, AVPacket *pkt, uint32_t timestam
     // Capture the rtp timestamp in the packet.
     pkt->rtpTimestamp = ogTimestamp;
 
+    av_log(s->ic, AV_LOG_INFO,
+        "RTP: Incoming packet TS %d,\n", (uint32_t)pkt->rtpTimestamp);
+
     if (pkt->pts != AV_NOPTS_VALUE || pkt->dts != AV_NOPTS_VALUE)
         return; /* Timestamp already set by depacketizer */
     if (timestamp == RTP_NOTS_VALUE)

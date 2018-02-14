@@ -101,7 +101,7 @@ static void get_frame_defaults(AVFrame *frame)
     frame->pts                   =
     frame->pkt_dts               =
     frame->pkt_pts               = AV_NOPTS_VALUE;
-    frame->pkt_rtpTimestamp      = 0;
+    frame->pkt_rtpTimestamp      = -1;
     av_frame_set_best_effort_timestamp(frame, AV_NOPTS_VALUE);
     av_frame_set_pkt_duration         (frame, 0);
     av_frame_set_pkt_pos              (frame, -1);

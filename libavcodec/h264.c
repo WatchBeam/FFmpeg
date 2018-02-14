@@ -1370,6 +1370,8 @@ static int h264_decode_frame(AVCodecContext *avctx, void *data,
             // This isn't 100% correct, the rtpTimestamps should be set by something before this in avpkt, but this also works
             // since this frame is from the resulting packet (even if using threads)
             pict->pkt_rtpTimestamp = avpkt->rtpTimestamp;
+
+            av_log(h->avctx, AV_LOG_INFO, "Decode RTP TS %d\n", (uint32_t)pict->pkt_rtpTimestamp);
             
             if (CONFIG_MPEGVIDEO) {
                 ff_print_debug_info2(h->avctx, pict, NULL,

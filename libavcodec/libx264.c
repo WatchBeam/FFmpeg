@@ -346,7 +346,12 @@ static int X264_frame(AVCodecContext *ctx, AVPacket *pkt, const AVFrame *frame,
 
     if(frame)
     {
-        pkt->rtpTimestamp = frame->pkt_rtpTimestamp;
+        pkt->rtpTimestamp = frame->pkt_rtpTimestamp;        
+        av_log(ctx, AV_LOG_INFO, "Encode frame TS %d", (uint32_t)frame->pkt_rtpTimestamp);
+    }
+    else
+    {
+        av_log(ctx, AV_LOG_INFO, "Encode frame is null? but the pkt time is %d", pkt->rtpTimestamp);
     }
     pkt->pts = pic_out.i_pts;
     pkt->dts = pic_out.i_dts;

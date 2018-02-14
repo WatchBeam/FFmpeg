@@ -540,7 +540,7 @@ static int rtp_write_packet(AVFormatContext *s1, AVPacket *pkt)
     else {
         s->cur_timestamp = pkt->pts;     
         av_log(s1, AV_LOG_INFO,
-            "RTP: Outoing has no rtpTS\n";      
+            "RTP: Outoing has no rtpTS\n");      
     }
 
     switch(st->codecpar->codec_id) {

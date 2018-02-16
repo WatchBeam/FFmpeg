@@ -566,7 +566,7 @@ static void finalize_packet(RTPDemuxContext *s, AVPacket *pkt, uint32_t timestam
     pkt->rtpTimestamp = ogTimestamp;
 
     av_log(s->ic, AV_LOG_INFO,
-        "RTP: Incoming packet TS %d,\n", (uint32_t)pkt->rtpTimestamp);
+        "RTP: Incoming packet TS %d, Sn %d\n", (uint32_t)pkt->rtpTimestamp);
 
     if (pkt->pts != AV_NOPTS_VALUE || pkt->dts != AV_NOPTS_VALUE)
         return; /* Timestamp already set by depacketizer */
@@ -624,6 +624,9 @@ static int rtp_parse_packet_internal(RTPDemuxContext *s, AVPacket *pkt,
     ssrc      = AV_RB32(buf + 8);
     /* store the ssrc in the RTPDemuxContext */
     s->ssrc = ssrc;
+
+    av_log(s->ic, AV_LOG_INFO,
+        "RTP: rtp_parse_packet_internal SN %d, SSRC %d\n", (uint32_t)seq, (uint32_t)ssrc);
 
     /* NOTE: we can handle only one payload type */
     if (s->payload_type != payload_type)
@@ -767,6 +770,9 @@ static int rtp_parse_one_packet(RTPDemuxContext *s, AVPacket *pkt,
     int rv = 0;
 
     if (!buf) {
+        av_log(s->ic, AV_LOG_INFO,
+            "RTP: rtp_parse_one_packet No buffer\n");
+
         /* If parsing of the previous packet actually returned 0 or an error,
          * there's nothing more to be parsed from that packet, but we may have
          * indicated that we can return the next enqueued packet. */
@@ -820,6 +826,8 @@ static int rtp_parse_one_packet(RTPDemuxContext *s, AVPacket *pkt,
             rv = rtp_parse_packet_internal(s, pkt, buf, len);
             return rv;
         } else {
+            av_log(s->ic, AV_LOG_INFO,
+                "RTP: Queuing packet SN:%d \n", (uint32_t)seq);
             /* Still missing some packet, enqueue this one. */
             rv = enqueue_packet(s, buf, len);
             if (rv < 0)
@@ -853,8 +861,15 @@ int ff_rtp_parse_packet(RTPDemuxContext *s, AVPacket *pkt,
         return -1;
     rv = rtp_parse_one_packet(s, pkt, bufptr, len);
     s->prev_ret = rv;
+    
     while (rv < 0 && has_next_packet(s))
+    {
+        av_log(s->ic, AV_LOG_INFO,
+                "RTP: ff_rtp_parse_packet has packet cur ptk TS %d\n", pkt->rtpTimestamp);
         rv = rtp_parse_queued_packet(s, pkt);
+    }
+    av_log(s->ic, AV_LOG_INFO,
+        "RTP: ff_rtp_parse_packet exit TS %d\n", pkt->rtpTimestamp);
     return rv ? rv : has_next_packet(s);
 }
 

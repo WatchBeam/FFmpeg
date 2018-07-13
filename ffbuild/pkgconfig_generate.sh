@@ -43,20 +43,20 @@ Libs.private: $($shared && echo $libs)
 Cflags: -I\${includedir}
 EOF
 
-mkdir -p doc/examples/pc-uninstalled
-includedir=${source_path}
-[ "$includedir" = . ] && includedir="\${pcfiledir}/../../.."
-    cat <<EOF > doc/examples/pc-uninstalled/${name}-uninstalled.pc
-prefix=
-exec_prefix=
-libdir=\${pcfiledir}/../../../$name
-includedir=${source_path}
+#mkdir -p doc/examples/pc-uninstalled
+#includedir=${source_path}
+#[ "$includedir" = . ] && includedir="\${pcfiledir}/../../.."
+#    cat <<EOF > doc/examples/pc-uninstalled/${name}-uninstalled.pc
+#prefix=
+#exec_prefix=
+#libdir=\${pcfiledir}/../../../$name
+#includedir=${source_path}
 
-Name: $fullname
-Description: $comment
-Version: $version
-Requires: $requires
-Conflicts:
-Libs: -L\${libdir} -Wl,-rpath,\${libdir} -l${fullname#lib} $($shared || echo $libs)
-Cflags: -I\${includedir}
-EOF
+#Name: $fullname
+#Description: $comment
+#Version: $version
+#Requires: $requires
+#Conflicts:
+#Libs: -L\${libdir} -Wl,-rpath,\${libdir} -l${fullname#lib} $($shared || echo $libs)
+#Cflags: -I\${includedir}
+#EOF

@@ -1030,7 +1030,7 @@ static int udp_read(URLContext *h, uint8_t *buf, int size)
             avail = av_fifo_size(s->fifo);
             if (avail) { // >=size) {
                 uint8_t tmp[4];
-
+                av_log(h, AV_LOG_ERROR, " reading from fifo\n");
                 av_fifo_generic_read(s->fifo, tmp, 4, NULL);
                 avail= AV_RL32(tmp);
                 if(avail > size){
@@ -1068,10 +1068,14 @@ static int udp_read(URLContext *h, uint8_t *buf, int size)
 
     if (!(h->flags & AVIO_FLAG_NONBLOCK)) {
         ret = ff_network_wait_fd(s->udp_fd, 0);
-        if (ret < 0)
+        if (ret < 0) {
+            av_log(h, AV_LOG_ERROR, " ff_network_wait_fd returned error\n");
             return ret;
+        }
     }
     ret = recv(s->udp_fd, buf, size, 0);
+    if(ret < 0)
+        av_log(h, AV_LOG_ERROR, " udp read from fd returned error\n");
 
     return ret < 0 ? ff_neterrno() : ret;
 }

@@ -1965,8 +1965,6 @@ static int udp_read_packet(AVFormatContext *s, RTSPStream **prtsp_st,
                 if (rtsp_st->rtp_handle) {
                     if (p[j].revents & POLLIN || p[j+1].revents & POLLIN) {
                         ret = ffurl_read(rtsp_st->rtp_handle, buf, buf_size);
-                        av_log(s, AV_LOG_ERROR,
-                           "ffurl_read returned %d \n", ret);
                         if (ret > 0) {
                             *prtsp_st = rtsp_st;
                             return ret;
